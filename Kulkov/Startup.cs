@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Kulkov.Data;
+using Kulkov.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +26,22 @@ namespace Kulkov
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                builder => builder.AllowAnyOrigin()
+                                  .AllowAnyMethod()
+                                  .AllowAnyHeader()
+                                  );
+            });
+
+            services.Configure<Settings>(options =>
+            {
+                options.ConnectionString = Configuration.GetSection("PostgresConnection:ConnectionString").Value;
+            });
+
+            services.AddTransient<ITemplateRepository, TemplateRepository>();
+
             services.AddControllers();
 
         }
@@ -36,6 +54,7 @@ namespace Kulkov
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors("CorsPolicy");
 
             app.UseRouting();
 

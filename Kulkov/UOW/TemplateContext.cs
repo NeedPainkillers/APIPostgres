@@ -5,18 +5,19 @@ using System.Threading.Tasks;
 using System.Data;
 using Npgsql;
 using Kulkov.Data;
+using Microsoft.Extensions.Options;
 
 namespace Kulkov.UOW
 {
-    public class Template
+    public class TemplateContext : IDisposable
     {
         string _connString = "Host=host.docker.internal;Username=postgres;Password=sdfl234;Database=taskdb";
-        private readonly NpgsqlConnection _conn;
+        private readonly NpgsqlConnection _conn = null;
 
-        public Template(string connectionString)
+        public TemplateContext(IOptions<Settings> settings)
         {
             //_connString = connectionString;
-            _conn = new NpgsqlConnection(_connString);
+            _conn = new NpgsqlConnection(settings.Value.ConnectionString);
         }
 
         public Task<IEnumerable<Account>> Accounts
@@ -50,7 +51,7 @@ namespace Kulkov.UOW
             return Response;
         }
 
-        public async Task<IEnumerable<string>> TestConnection()
+        private async Task<IEnumerable<string>> TestConnection()
         {
             await using var conn = new NpgsqlConnection(_connString);
             await conn.OpenAsync();
@@ -70,6 +71,12 @@ namespace Kulkov.UOW
                     Response.Add(reader.GetString(0));
             return Response;
 
+        }
+
+        public void Dispose()
+        {
+            _conn.CloseAsync();
+            _conn.Dispose();
         }
     }
 }
