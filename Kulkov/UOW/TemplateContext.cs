@@ -11,12 +11,11 @@ namespace Kulkov.UOW
 {
     public class TemplateContext : IDisposable
     {
-        string _connString = "Host=host.docker.internal;Username=postgres;Password=sdfl234;Database=taskdb";
+        //string _connString = "Host=host.docker.internal;Username=postgres;Password=sdfl234;Database=taskdb";
         private readonly NpgsqlConnection _conn = null;
 
         public TemplateContext(IOptions<Settings> settings)
         {
-            //_connString = connectionString;
             _conn = new NpgsqlConnection(settings.Value.ConnectionString);
         }
 
@@ -51,27 +50,27 @@ namespace Kulkov.UOW
             return Response;
         }
 
-        private async Task<IEnumerable<string>> TestConnection()
-        {
-            await using var conn = new NpgsqlConnection(_connString);
-            await conn.OpenAsync();
+        //private async Task<IEnumerable<string>> TestConnection()
+        //{
+        //    await using var conn = new NpgsqlConnection(_connString);
+        //    await conn.OpenAsync();
 
-            // Insert some data
-            await using (var cmd = new NpgsqlCommand("INSERT INTO taskdb.public.account ( username, password, email, created_on, last_login) VALUES ((@p), 'somePwd', 'Test@email.example', now(), now());", conn))
-            {
-                cmd.Parameters.AddWithValue("p", "Hello world");
-                await cmd.ExecuteNonQueryAsync();
-            }
+        //    // Insert some data
+        //    await using (var cmd = new NpgsqlCommand("INSERT INTO taskdb.public.account ( username, password, email, created_on, last_login) VALUES ((@p), 'somePwd', 'Test@email.example', now(), now());", conn))
+        //    {
+        //        cmd.Parameters.AddWithValue("p", "Hello world");
+        //        await cmd.ExecuteNonQueryAsync();
+        //    }
 
-            List<string> Response = new List<string>();
-            // Retrieve all rows
-            await using (var cmd = new NpgsqlCommand("SELECT username FROM account", conn))
-            await using (var reader = await cmd.ExecuteReaderAsync())
-                while (await reader.ReadAsync())
-                    Response.Add(reader.GetString(0));
-            return Response;
+        //    List<string> Response = new List<string>();
+        //    // Retrieve all rows
+        //    await using (var cmd = new NpgsqlCommand("SELECT username FROM account", conn))
+        //    await using (var reader = await cmd.ExecuteReaderAsync())
+        //        while (await reader.ReadAsync())
+        //            Response.Add(reader.GetString(0));
+        //    return Response;
 
-        }
+        //}
 
         public void Dispose()
         {
