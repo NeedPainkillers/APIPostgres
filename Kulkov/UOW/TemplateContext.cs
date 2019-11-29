@@ -27,6 +27,14 @@ namespace Kulkov.UOW
             }
         }
 
+        public NpgsqlConnection GetConnection
+        {
+            get
+            {
+                return _conn;
+            }
+        }
+
         private async Task<IEnumerable<Account>> getAccountsInternal()
         {
             await _conn.OpenAsync();
