@@ -36,7 +36,8 @@ namespace Kulkov.Repository
             if(connection.State != System.Data.ConnectionState.Open)
                  await connection.OpenAsync();
 
-            await using (var cmd = new NpgsqlCommand("INSERT INTO taskdb.public.\"Employess\" (first_name, last_name, patronymic, gender, hire_date, id_post) VALUES ((@name), (@last), (@patron), (@gender), (@hire), (@post));", conn))
+            await using (var cmd = new NpgsqlCommand("INSERT INTO taskdb.public.\"Employess\" (first_name, last_name, patronymic, gender, hire_date, id_post) " +
+                "VALUES ((@name), (@last), (@patron), (@gender), (@hire), (@post));", connection))
             {
                 cmd.Parameters.AddWithValue("name", item.first_name);
                 cmd.Parameters.AddWithValue("last", item.last_name);
@@ -57,7 +58,7 @@ namespace Kulkov.Repository
                 await connection.OpenAsync();
             List<Employee> Response = new List<Employee>();
             // Retrieve all rows
-            await using (var cmd = new NpgsqlCommand("SELECT t.*, CTID FROM public.\"Employees\" t ORDER BY id_emp ASC", connection))
+            await using (var cmd = new NpgsqlCommand("SELECT t.* FROM public.\"Employees\" t ORDER BY id_emp ASC", connection))
             await using (var reader = await cmd.ExecuteReaderAsync())
                 while (await reader.ReadAsync())
                 {
@@ -82,10 +83,10 @@ namespace Kulkov.Repository
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
 
-            int idi;
-            if (!Int32.TryParse(id, idi))
+            if (!Int32.TryParse(id, out int idi))
                 throw new Exception("id cannot be converted to integer");
-            await using var cmd = new NpgsqlCommand(String.Format("SELECT t.*, CTID FROM public.\"Employees\" t WHERE t.id_emp = {0}", idi), connection);
+
+            await using var cmd = new NpgsqlCommand(String.Format("SELECT t.* FROM public.\"Employees\" t WHERE t.id_emp = {0}", idi), connection);
             await using var reader = await cmd.ExecuteReaderAsync();
             return new Employee()
             {
@@ -114,7 +115,6 @@ namespace Kulkov.Repository
 
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
-            //DELETE FROM "public"."Employees" WHERE "id_emp" = 4
 
             await using (var cmd = new NpgsqlCommand("DELETE FROM \"public\".\"Employees\" WHERE \"id_emp\" = (@id);", connection))
             {
@@ -131,7 +131,7 @@ namespace Kulkov.Repository
                 await connection.OpenAsync();
 
             await using (var cmd = new NpgsqlCommand("UPDATE taskdb.public.\"Employees\" SET (first_name, last_name, patronymic, gender, hire_date, id_post) =" +
-                " ((@name), (@last), (@patron), (@gender), (@hire), (@post)) WHERE id_emp = (@id);", conn))
+                " ((@name), (@last), (@patron), (@gender), (@hire), (@post)) WHERE id_emp = (@id);", connection))
             {
                 cmd.Parameters.AddWithValue("name", item.first_name);
                 cmd.Parameters.AddWithValue("last", item.last_name);

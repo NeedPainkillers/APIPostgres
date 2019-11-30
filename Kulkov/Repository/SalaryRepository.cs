@@ -29,38 +29,66 @@ namespace Kulkov.Repository
             _context = new TemplateContext(settings);
         }
 
-        public Task AddSalary(Salary item)
+        public async Task AddSalary(Salary item)
         {
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Salary>> GetAllSalaries()
+        public async Task<IEnumerable<Salary>> GetAllSalaries()
         {
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
             throw new NotImplementedException();
         }
 
-        public Task<Salary> GetSalary(string id)
+        public async Task<Salary> GetSalary(string id)
         {
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
             throw new NotImplementedException();
         }
 
-        public Task<Salary> GetSalaryByName(string id)
+        public async Task<Salary> GetSalaryByName(string id)
         {
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
             throw new NotImplementedException();
         }
 
-        public void RemoveSalary(string id)
+        public async void RemoveSalary(string id)
         {
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
             throw new NotImplementedException();
         }
 
-        public void UpdateSalaries(string id, Salary item)
+        public async void UpdateSalaries(string id, Salary item)
         {
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
             throw new NotImplementedException();
         }
 
-        public void UpdateSalary(string id, Salary item)
+        public async void UpdateSalary(string id, Salary item)
         {
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
             throw new NotImplementedException();
         }
     }

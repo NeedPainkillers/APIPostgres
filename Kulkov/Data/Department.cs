@@ -12,6 +12,6 @@ namespace Kulkov.Data
         public int id_loc { get; set; } = -1;
         public int id_head { get; set; } = -1;
         public Location location { get; set; } = new Location();
-        public List<Employee> employees { get; set; } = new List<Employee>;
+        public List<Employee> employees { get; set; } = new List<Employee>();
     }
 }

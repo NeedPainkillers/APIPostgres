@@ -17,7 +17,6 @@ namespace Kulkov.Repository
         void RemovePost(string id);
         // обновление содержания (body) записи
         void UpdatePost(string id, Post item);
-        void UpdatePosts(string id, Post item);
     }
 
     public class PostRepository : IPostRepository
@@ -29,38 +28,63 @@ namespace Kulkov.Repository
             _context = new TemplateContext(settings);
         }
 
-        public Task AddPost(Post item)
+        public async Task AddPost(Post item)
         {
+
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
+
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Post>> GetAllPosts()
+        public async Task<IEnumerable<Post>> GetAllPosts()
         {
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
             throw new NotImplementedException();
         }
 
-        public Task<Post> GetPost(string id)
+        public async Task<Post> GetPost(string id)
         {
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
+
             throw new NotImplementedException();
         }
 
-        public Task<Post> GetPostByName(string id)
+        public async Task<Post> GetPostByName(string id)
         {
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
+
             throw new NotImplementedException();
         }
 
-        public void RemovePost(string id)
+        public async void RemovePost(string id)
         {
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
+
             throw new NotImplementedException();
         }
 
-        public void UpdatePost(string id, Post item)
+        public async void UpdatePost(string id, Post item)
         {
-            throw new NotImplementedException();
-        }
+            var connection = _context.GetConnection;
 
-        public void UpdatePosts(string id, Post item)
-        {
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
+
             throw new NotImplementedException();
         }
     }
