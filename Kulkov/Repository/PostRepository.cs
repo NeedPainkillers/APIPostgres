@@ -1,6 +1,7 @@
 ﻿using Kulkov.Data;
 using Kulkov.UOW;
 using Microsoft.Extensions.Options;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +37,13 @@ namespace Kulkov.Repository
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
 
-            throw new NotImplementedException();
+            await using (var cmd = new NpgsqlCommand("INSERT INTO taskdb.public.\"Posts\" (post_name, date_start) " +
+                "VALUES ((@name), (@date));", connection))
+            {
+                cmd.Parameters.AddWithValue("name", item.post_name);
+                cmd.Parameters.AddWithValue("date", item.date_start);
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
 
         public async Task<IEnumerable<Post>> GetAllPosts()
@@ -45,7 +52,20 @@ namespace Kulkov.Repository
 
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
-            throw new NotImplementedException();
+
+            List<Post> Response = new List<Post>();
+            await using (var cmd = new NpgsqlCommand("SELECT t.* FROM public.\"Posts\" t ORDER BY id_post ASC", connection))
+            await using (var reader = await cmd.ExecuteReaderAsync())
+                while (await reader.ReadAsync())
+                {
+                    Response.Add(new Post()
+                    {
+                        id_post = Int32.Parse(reader.GetValue(0).ToString()),
+                        post_name = reader.GetValue(1).ToString(),
+                        date_start = reader.GetDateTime(2)
+                    });
+                }
+            return Response;
         }
 
         public async Task<Post> GetPost(string id)
@@ -55,7 +75,17 @@ namespace Kulkov.Repository
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
 
-            throw new NotImplementedException();
+            if (!Int32.TryParse(id, out int idi))
+                throw new Exception("id cannot be converted to integer");
+
+            await using var cmd = new NpgsqlCommand(String.Format("SELECT t.* FROM public.\"Posts\" t WHERE t.id_post = {0}", idi), connection);
+            await using var reader = await cmd.ExecuteReaderAsync();
+            return new Post()
+            {
+                id_post = Int32.Parse(reader.GetValue(0).ToString()),
+                post_name = reader.GetValue(1).ToString(),
+                date_start = reader.GetDateTime(2)
+            };
         }
 
         public async Task<Post> GetPostByName(string id)
@@ -75,7 +105,11 @@ namespace Kulkov.Repository
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
 
-            throw new NotImplementedException();
+            await using (var cmd = new NpgsqlCommand("DELETE FROM \"public\".\"Posts\" WHERE \"id_post\" = (@id);", connection))
+            {
+                cmd.Parameters.AddWithValue("id", id);
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
 
         public async void UpdatePost(string id, Post item)
@@ -85,7 +119,14 @@ namespace Kulkov.Repository
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
 
-            throw new NotImplementedException();
+            await using (var cmd = new NpgsqlCommand("UPDATE taskdb.public.\"Posts\" SET (name_post, date_start) =" +
+                " ((@name), (@date)) WHERE id_dept = (@id);", connection))
+            {
+                cmd.Parameters.AddWithValue("id", item.id_post);
+                cmd.Parameters.AddWithValue("name", item.post_name);
+                cmd.Parameters.AddWithValue("date", item.date_start);
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
     }
 }
