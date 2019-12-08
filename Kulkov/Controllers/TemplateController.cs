@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Kulkov.Data;
+﻿using Kulkov.Data;
 using Kulkov.Repository;
-using Kulkov.UOW;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Kulkov.Controllers
 {

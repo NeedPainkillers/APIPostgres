@@ -4,7 +4,6 @@ using Microsoft.Extensions.Options;
 using Npgsql;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Kulkov.Repository
@@ -131,7 +130,7 @@ namespace Kulkov.Repository
                 await connection.OpenAsync();
 
             await using (var cmd = new NpgsqlCommand("UPDATE taskdb.public.\"Salaries\" SET (salary, fee) =" +
-                " ((@address), (@city)) WHERE id_dept = (@id);", connection))
+                " ((@address), (@city)) WHERE id_emp = (@id);", connection))
             {
                 cmd.Parameters.AddWithValue("id", item.id_emp);
                 cmd.Parameters.AddWithValue("address", item.salary);

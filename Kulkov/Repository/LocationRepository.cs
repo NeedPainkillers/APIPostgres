@@ -1,10 +1,9 @@
 ﻿using Kulkov.Data;
 using Kulkov.UOW;
-using Npgsql;
 using Microsoft.Extensions.Options;
+using Npgsql;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Kulkov.Repository
@@ -118,7 +117,7 @@ namespace Kulkov.Repository
                 await connection.OpenAsync();
 
             await using (var cmd = new NpgsqlCommand("UPDATE taskdb.public.\"Departments\" SET (address, city) =" +
-                " ((@address), (@city)) WHERE id_dept = (@id);", connection))
+                " ((@address), (@city)) WHERE id_loc = (@id);", connection))
             {
                 cmd.Parameters.AddWithValue("id", item.id_loc);
                 cmd.Parameters.AddWithValue("address", item.address);

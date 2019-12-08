@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Data;
-using Npgsql;
-using Kulkov.Data;
+﻿using Kulkov.Data;
 using Microsoft.Extensions.Options;
+using Npgsql;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Kulkov.UOW
 {
