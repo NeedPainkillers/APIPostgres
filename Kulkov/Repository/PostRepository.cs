@@ -36,8 +36,10 @@ namespace Kulkov.Repository
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
 
-            await using (var cmd = new NpgsqlCommand("INSERT INTO taskdb.public.\"Posts\" (post_name, date_start) " +
-                "VALUES ((@name), (@date));", connection))
+            //await using (var cmd = new NpgsqlCommand("INSERT INTO taskdb.public.\"Posts\" (post_name, date_start) " +
+            //    "VALUES ((@name), (@date));", connection))
+            //CALL insert_on_posts(text 't', now()::timestamp);
+            await using (var cmd = new NpgsqlCommand("CALL insert_on_posts(text '(@name)',(@date)::timestamp);", connection))
             {
                 cmd.Parameters.AddWithValue("name", item.post_name);
                 cmd.Parameters.AddWithValue("date", item.date_start);
@@ -104,7 +106,7 @@ namespace Kulkov.Repository
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
 
-            await using (var cmd = new NpgsqlCommand("DELETE FROM \"public\".\"Posts\" WHERE \"id_post\" = (@id);", connection))
+            await using (var cmd = new NpgsqlCommand("CALL delete_on_posts((@id));", connection))
             {
                 cmd.Parameters.AddWithValue("id", id);
                 await cmd.ExecuteNonQueryAsync();
@@ -118,8 +120,7 @@ namespace Kulkov.Repository
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
 
-            await using (var cmd = new NpgsqlCommand("UPDATE taskdb.public.\"Posts\" SET (name_post, date_start) =" +
-                " ((@name), (@date)) WHERE id_post = (@id);", connection))
+            await using (var cmd = new NpgsqlCommand("CALL update_on_posts((@id), varchar (@name), (@date)::timestamp);", connection))
             {
                 cmd.Parameters.AddWithValue("id", item.id_post);
                 cmd.Parameters.AddWithValue("name", item.post_name);

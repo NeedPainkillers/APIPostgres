@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 
@@ -12,6 +13,7 @@ namespace Kulkov.Repository
     public interface IDepartmentRepository
     {
         Task<IEnumerable<Department>> GetAllDepartments();
+        Task<IEnumerable<Department>> GetDepartmentsHaving();
         Task<Department> GetDepartment(string id);
         Task<IEnumerable<Department>> GetDepartmentByName(string id);
         Task AddDepartment(Department item);
@@ -117,6 +119,34 @@ namespace Kulkov.Repository
                     }
             }
             return Response;
+        }
+
+        public async Task<IEnumerable<Department>> GetDepartmentsHaving()
+        {
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
+
+            List<Department> Response = new List<Department>();
+            // Retrieve all rows
+            await using (var cmd = new NpgsqlCommand("SELECT d.id_dept, SUM(s.salary) FROM public.\"Employees\" e " +
+                                                    "LEFT JOIN public.\"Salaries\" s ON s.id_emp = e.id_emp " +
+                                                    "LEFT JOIN public.\"dept_empl\" d ON d.id_emp = e.id_emp " +
+                                                    "GROUP BY d.id_dept" +
+                                                    "HAVING SUM(s.salary) > 5000;"
+                                                    , connection))
+            await using (var reader = await cmd.ExecuteReaderAsync())
+                while (await reader.ReadAsync())
+                {
+                    Response.Add(new Department()
+                    {
+                        id_dept = reader.GetInt32(0),
+                        additionalInfo = JsonSerializer.Serialize(new { Salaries = reader.GetValue(1).ToString() })
+                    });
+                }
+            return Response;
+
         }
 
         public async void RemoveDepartment(string id)

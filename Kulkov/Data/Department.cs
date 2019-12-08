@@ -11,6 +11,7 @@ namespace Kulkov.Data
         public string dept_name { get; set; } = string.Empty;
         public int id_loc { get; set; } = -1;
         public int id_head { get; set; } = -1;
+        public string additionalInfo { get; set; } = string.Empty;
         public Location location { get; set; } = new Location();
         public List<Employee> employees { get; set; } = new List<Employee>();
     }

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Kulkov.Data;
 using Kulkov.Repository;
-using Kulkov.Data;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Kulkov.Controllers
 {
@@ -26,27 +23,24 @@ namespace Kulkov.Controllers
         /// </summary>
 
         private readonly IEmployeeRepository _empRepository;
-        private readonly ISalaryRepository _salRepository;
-        private readonly IDepartmentRepository _depRepository;
 
-        public EmployeeController(IEmployeeRepository empRepository, ISalaryRepository salRepository, IDepartmentRepository depRepository)
+
+        public EmployeeController(IEmployeeRepository empRepository)
         {
             _empRepository = empRepository;
-            _salRepository = salRepository;
-            _depRepository = depRepository;
         }
 
         // GET api/employee
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         [HttpGet]
-        public Task<IEnumerable<Employee>> Get([FromQuery] int mode)
+        public Task<IEnumerable<Employee>> Get([FromQuery] int mode, [FromQuery] bool order = true)
         {
             switch (mode)
             {
                 case 1:
                     return GetFullEmployeesInternal();
                 case 2:
-                    return GetSalaryEmployeesInternal();
+                    return GetSalaryEmployeesInternal(order);
                 case 3:
                     return GetDepartmentEmployeesInternal();
                 default:
@@ -59,19 +53,19 @@ namespace Kulkov.Controllers
 
             return await _empRepository.GetAllEmployees();
         }
-        
+
         private async Task<IEnumerable<Employee>> GetFullEmployeesInternal()
         {
 
             return await _empRepository.GetAllEmployees(1);
         }
-        
-        private async Task<IEnumerable<Employee>> GetSalaryEmployeesInternal()
+
+        private async Task<IEnumerable<Employee>> GetSalaryEmployeesInternal(bool order)
         {
 
-            return await _empRepository.GetAllEmployees(2);
+            return await _empRepository.GetAllEmployees(2, order);
         }
-        
+
         private async Task<IEnumerable<Employee>> GetDepartmentEmployeesInternal()
         {
 
@@ -102,7 +96,7 @@ namespace Kulkov.Controllers
         }
         private async Task<Employee> GetSalaryEmployeeIdInternal(string id)
         {
-            return await _empRepository.GetEmployee(id) ?? new Employee();
+            return await _empRepository.GetEmployeeCase(id) ?? new Employee();
         }
         private async Task<Employee> GetDepartmentEmployeeIdInternal(string id)
         {
@@ -116,7 +110,7 @@ namespace Kulkov.Controllers
 
         // POST api/Employee
         [HttpPost]
-        public async Task<bool> Post([FromBody] Employee item) // return result 
+        public async Task<bool> Post([FromBody] Employee item)
         {
             await _empRepository.AddEmployee(item);
 

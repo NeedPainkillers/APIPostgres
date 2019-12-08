@@ -17,7 +17,8 @@ namespace Kulkov.Repository
         void RemoveSalary(string id);
         // обновление содержания (body) записи
         void UpdateSalary(string id, Salary item);
-        void UpdateSalaries(string id, Salary item);
+        void TransactionExample(int id1, int id2);
+        Task<bool> IndexSalaries();
     }
 
     public class SalaryRepository : ISalaryRepository
@@ -99,6 +100,19 @@ namespace Kulkov.Repository
             throw new NotImplementedException();
         }
 
+        public async Task<bool> IndexSalaries()
+        {
+            //select sal_cur();
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
+
+            await using var cmd = new NpgsqlCommand("select sal_cur()", connection);
+            await using var reader = await cmd.ExecuteReaderAsync();
+            return reader.GetBoolean(0);
+        }
+
         public async void RemoveSalary(string id)
         {
             var connection = _context.GetConnection;
@@ -113,13 +127,24 @@ namespace Kulkov.Repository
             }
         }
 
-        public async void UpdateSalaries(string id, Salary item)
+        public async void TransactionExample(int id1, int id2)
         {
             var connection = _context.GetConnection;
 
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
-            throw new NotImplementedException();
+
+            await using (var cmd = new NpgsqlCommand("START TRANSACTION;" +
+                "CALL example_transact((@id1)); " +
+                "savepoint one; " +
+                "CALL example_transact((@id2)); " +
+                "rollback to one; " +
+                "COMMIT;", connection))
+            {
+                cmd.Parameters.AddWithValue("id1", id1);
+                cmd.Parameters.AddWithValue("id2", id2);
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
 
         public async void UpdateSalary(string id, Salary item)

@@ -14,6 +14,7 @@ namespace Kulkov.Data
         public bool gender { get; set; } = true;
         public DateTime hire_date { get; set; } = DateTime.Now;
         public int id_post { get; set; } = -1;
+        public string additionalInfo { get; set; } = string.Empty;
         public Salary salary { get; set; } = new Salary();
         public Post post { get; set; } = new Post();
     }

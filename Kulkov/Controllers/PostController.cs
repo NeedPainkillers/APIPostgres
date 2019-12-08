@@ -52,7 +52,7 @@ namespace Kulkov.Controllers
 
         // POST api/Salary
         [HttpPost]
-        public async Task<bool> Post([FromBody] Post item) // return result 
+        public async Task<bool> Post([FromBody] Post item)
         {
             await _postRepository.AddPost(item);
 

@@ -5,17 +5,20 @@ using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace Kulkov.Repository
 {
     public interface IEmployeeRepository
     {
-        Task<IEnumerable<Employee>> GetAllEmployees();        
-        Task<IEnumerable<Employee>> GetAllEmployees(int mode);
+        Task<IEnumerable<Employee>> GetAllEmployees();
+        Task<IEnumerable<Employee>> GetAllEmployees(int mode, bool order = true);
+        Task<IEnumerable<Employee>> GetEmployeesCorr();
         Task<Employee> GetEmployee(string id);
         Task<Employee> GetEmployee(string id, int mode);
+        Task<Employee> GetEmployeeCase(string id);
         Task<Employee> GetEmployeeByName(string id);
-        
+
         Task AddEmployee(Employee item);
         void RemoveEmployee(string id);
         // обновление содержания (body) записи
@@ -79,12 +82,12 @@ namespace Kulkov.Repository
             return Response;
         }
 
-        public Task<IEnumerable<Employee>> GetAllEmployees(int mode)
+        public Task<IEnumerable<Employee>> GetAllEmployees(int mode, bool order = true)
         {
-            return GetAllEmployeesInternal(mode);
+            return GetAllEmployeesInternal(mode, order);
         }
 
-        public async Task<IEnumerable<Employee>> GetAllEmployeesInternal(int mode)
+        public async Task<IEnumerable<Employee>> GetAllEmployeesInternal(int mode, bool order = true)
         {
             var connection = _context.GetConnection;
 
@@ -96,7 +99,7 @@ namespace Kulkov.Repository
                 case 1:
                     return await GetEmployeesFull();
                 case 2:
-                    return await GetEmployeesSalary();
+                    return await GetEmployeesSalary(order);
                 case 3:
                     return await GetEmployeesDepartment();
                 default:
@@ -126,30 +129,32 @@ namespace Kulkov.Repository
                     });
                 }
             return Response;
-        }        
-        
-        private async Task<IEnumerable<Employee>> GetEmployeesSalary()
+        }
+
+        private async Task<IEnumerable<Employee>> GetEmployeesSalary(bool order)
+        ///
+        /// View example
+        ///
         {
+
             var connection = _context.GetConnection;
             List<Employee> Response = new List<Employee>();
             // Retrieve all rows
-            await using (var cmd = new NpgsqlCommand("SELECT t.* FROM public.\"Employees\" t ORDER BY id_emp ASC", connection))
+            await using (var cmd = new NpgsqlCommand(String.Format("select * from view_order({0});", order), connection))
             await using (var reader = await cmd.ExecuteReaderAsync())
                 while (await reader.ReadAsync())
                 {
                     Response.Add(new Employee()
                     {
-                        id_emp = Int32.Parse(reader.GetValue(0).ToString()),
-                        first_name = reader.GetValue(1).ToString(),
-                        last_name = reader.GetValue(2).ToString(),
-                        patronymic = reader.GetValue(3).ToString(),
-                        gender = reader.GetBoolean(4),
-                        hire_date = reader.GetDateTime(5),
-                        id_post = Int32.Parse(reader.GetValue(6).ToString())
+                        first_name = reader.GetValue(0).ToString(),
+                        last_name = reader.GetValue(1).ToString(),
+                        patronymic = reader.GetValue(2).ToString(),
+                        salary = new Salary() { salary = reader.GetInt32(3), time_update = reader.GetDateTime(4) },
                     });
                 }
             return Response;
-        }        
+        }
+
         private async Task<IEnumerable<Employee>> GetEmployeesDepartment()
         {
             var connection = _context.GetConnection;
@@ -268,12 +273,103 @@ namespace Kulkov.Repository
 
         private async Task<Employee> GetEmployeeSalary(string id, int mode)
         {
-            throw new NotImplementedException();
+            return await GetEmployeeCase(id);
         }
 
         private async Task<Employee> GetEmployeeFull(string id, int mode)
         {
             throw new NotImplementedException();
         }
+
+        public async Task<Employee> GetEmployeeCase(string id)
+        {
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
+
+            if (!Int32.TryParse(id, out int idi))
+                throw new Exception("id cannot be converted to integer");
+
+            await using var cmd = new NpgsqlCommand(String.Format("SELECT e.last_name, " +
+                                                                    "e.first_name, " +
+                                                                    "e.patronymic, " +
+                                                                    "s.salary, " +
+                                                                    "CASE WHEN s.salary = 0 or s.salary is null THEN 'not given yet' " +
+                                                                    "ELSE CAST(calculate_salary(s.salary, s.fee) as VARCHAR(20)) " +
+                                                                    "END AS salary_monthly " +
+                                                                    "FROM  public.\"Employees\" e " +
+                                                                    "LEFT JOIN public.\"Salaries\" s ON s.id_emp = e.id_emp" +
+                                                                    "WHERE e.id_emp = {0};", idi), connection);
+            await using var reader = await cmd.ExecuteReaderAsync();
+            if (!Int32.TryParse(reader.GetString(4), out int fee))
+                fee = -1;
+            return new Employee()
+            {
+                first_name = reader.GetValue(0).ToString(),
+                last_name = reader.GetValue(1).ToString(),
+                patronymic = reader.GetValue(2).ToString(),
+                salary = new Salary() { salary = reader.GetInt32(3), fee = fee }
+            };
+        }
+
+        public async Task<IEnumerable<Employee>> GetEmployeesCorr()
+        {
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
+
+            List<Employee> Response = new List<Employee>();
+            // Retrieve all rows
+            await using (var cmd = new NpgsqlCommand("SELECT v.last_name, v.salary, (SELECT AVG(s.salary) FROM public.\"Salaries\" s) " +
+                                                    "FROM emp_sal_join() v " +
+                                                    "WHERE v.salary >= " +
+                                                    "(SELECT AVG(e.salary) FROM(SELECT * FROM public.\"Employees\"  LEFT JOIN public.\"Salaries\" s ON s.id_emp = v.id_emp)e);"
+                                                    , connection))
+            await using (var reader = await cmd.ExecuteReaderAsync())
+                while (await reader.ReadAsync())
+                {
+                    Response.Add(new Employee()
+                    {
+                        last_name = reader.GetString(0),
+                        salary = new Salary() { salary = reader.GetInt32(1) },
+                        additionalInfo = JsonSerializer.Serialize(new { avgSalary = reader.GetValue(2).ToString() })
+                    });
+                }
+            return Response;
+
+        }
+
+        //public async Task<IEnumerable<Employee>> GetEmployeesHaving()
+        //{
+        //    /*
+        //    SELECT e.id_dept, SUM(s.salary) FROM 'Employees' e GROUP BY e.id_dept HAVING SUM(s.salary) > 5000 LEFT JOIN 'Salaries' s ON s.id_emp = e.id_emp LEFT JOIN 'dept_empl' d ON d.id_emp = e.id_emp;
+        //    */
+        //    var connection = _context.GetConnection;
+
+        //    if (connection.State != System.Data.ConnectionState.Open)
+        //        await connection.OpenAsync();
+
+        //    List<Employee> Response = new List<Employee>();
+        //    // Retrieve all rows
+        //    await using (var cmd = new NpgsqlCommand("SELECT d.id_dept, SUM(s.salary) FROM public.\"Employees\" e " +
+        //                                            "LEFT JOIN public.\"Salaries\" s ON s.id_emp = e.id_emp " +
+        //                                            "LEFT JOIN public.\"dept_empl\" d ON d.id_emp = e.id_emp " +
+        //                                            "GROUP BY d.id_dept" +
+        //                                            "HAVING SUM(s.salary) > 5000;"
+        //                                            , connection))
+        //    await using (var reader = await cmd.ExecuteReaderAsync())
+        //        while (await reader.ReadAsync())
+        //        {
+        //            Response.Add(new Employee()
+        //            {
+        //                last_name = reader.GetString(0),
+        //                salary = new Salary() { salary = reader.GetInt32(1) },
+        //                additionalInfo = JsonSerializer.Serialize(new { avgSalary = reader.GetValue(2).ToString() })
+        //            });
+        //        }
+        //    return Response;
+        //}
     }
 }
