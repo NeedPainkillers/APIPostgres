@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29411.108
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kulkov", "Kulkov\Kulkov.csproj", "{83CBDD16-B42D-42A6-A497-B3049ADC25EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kulkov", "Kulkov\Kulkov.csproj", "{83CBDD16-B42D-42A6-A497-B3049ADC25EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KulkovFrontend", "KulkovFrontend\KulkovFrontend.csproj", "{D0368E5C-019A-4527-85F2-2833B964F9D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{83CBDD16-B42D-42A6-A497-B3049ADC25EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83CBDD16-B42D-42A6-A497-B3049ADC25EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83CBDD16-B42D-42A6-A497-B3049ADC25EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0368E5C-019A-4527-85F2-2833B964F9D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0368E5C-019A-4527-85F2-2833B964F9D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0368E5C-019A-4527-85F2-2833B964F9D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0368E5C-019A-4527-85F2-2833B964F9D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

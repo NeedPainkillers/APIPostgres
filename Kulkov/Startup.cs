@@ -41,6 +41,7 @@ namespace Kulkov
             });
 
             services.AddTransient<ITemplateRepository, TemplateRepository>();
+            services.AddSingleton<ILocationRepository, LocationRepository>();
 
             services.AddControllers();
 
