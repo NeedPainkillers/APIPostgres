@@ -6,6 +6,7 @@
 @using System.Linq
 @using System.Collections.Generic
 @inject IEmployeeRepository Service
+@inject IPostRepository PostGetter
 
 <h1>Безработные</h1>
 
@@ -24,23 +25,34 @@
     <span class="label">Отчество</span>
     <span class="border"></span>
 </label>
-<label for="inp" class="">
-    <input type="checkbox" @bind="employee.gender" @bind:event="oninput" />
-    <span class="label">Пол</span>
-    <span class="border"></span>
-</label>
 <label for="inp" class="inp">
     <input type="datetime" @bind-value="employee.hire_date" @bind-value:event="onchange" />
     <span class="label">Дата найма</span>
     <span class="border"></span>
 </label>
-<label for="inp" class="inp">
-    <input type="text" @bind-value="employee.id_post" @bind-value:event="onchange" />
-    <span class="label">id должности</span>
-    <span class="border"></span>
+@*<label for="inp" class="inp">
+        <input type="text" @bind-value="employee.id_post" @bind-value:event="onchange" />
+        <span class="label">id должности</span>
+        <span class="border"></span>
+    </label>*@
+    <br />
+<select class="form-control" @bind="@employee.id_post">
+
+    <option value="-1">Должность</option>
+    @if (posts != null)
+    {
+        @foreach (var post in posts)
+        {
+            <option value="@post.id_post"> @post.post_name</option>
+        }
+    }
+</select>
+<label for="inp" class="">
+    <span class="inp label">Пол</span>
+    <input type="checkbox" @bind="employee.gender" @bind:event="oninput" />
 </label>
 
-<input type="button" value="Добавить"  @onclick="Add"/>
+<input type="button" value="Добавить" @onclick="Add" />
 
 @if (employees == null)
 {
@@ -67,18 +79,29 @@ else
                 var l = i; //local index
                 <tr>
                     <td>@employees[i].id_emp</td>
-                    <td><input type="text" @bind-value="employees[l].last_name" @bind-value:event="oninput" @onchange="() => { Update(l).Wait(); }"/></td>
-                    <td><input type="text" @bind-value="employees[l].first_name" @bind-value:event="oninput" @onchange="() => { Update(l).Wait(); }"/></td>
-                    <td><input type="text" @bind-value="employees[l].patronymic" @bind-value:event="oninput" @onchange="() => { Update(l).Wait(); }"/></td>
-                    <td><input type="checkbox" @bind="employees[l].gender" @bind:event="oninput" @onchange="() => { Update(l).Wait(); }"/></td>
-                    <td><input type="datetime" @bind-value="employees[l].hire_date" @bind-value:event="oninput" @onchange="() => { Update(l).Wait(); }"/></td>
-                    <td><input type="text" @bind-value="employees[l].id_post" @bind-value:event="oninput" @onchange="() => { Update(l).Wait(); }"/></td>
-                    <td><input type="checkbox" @bind="vs[l]" @bind:event="oninput"/></td>
+                    <td><input type="text" @bind-value="employees[l].last_name" @bind-value:event="oninput" @onchange="() => { Update(l).Wait(); }" /></td>
+                    <td><input type="text" @bind-value="employees[l].first_name" @bind-value:event="oninput" @onchange="() => { Update(l).Wait(); }" /></td>
+                    <td><input type="text" @bind-value="employees[l].patronymic" @bind-value:event="oninput" @onchange="() => { Update(l).Wait(); }" /></td>
+                    <td><input type="checkbox" @bind="employees[l].gender" @bind:event="oninput" @onchange="() => { Update(l).Wait(); }" /></td>
+                    <td><input type="datetime" @bind-value="employees[l].hire_date" @bind-value:event="oninput" @onchange="() => { Update(l).Wait(); }" /></td>
+                    @*<td><input type="text" @bind-value="employees[l].id_post" @bind-value:event="oninput" @onchange="() => { Update(l).Wait(); }" /></td>*@
+                    <td>
+                        <select class="" @bind="@employees[l].id_post" @bind:event="oninput" @onchange="() => { Update(l).Wait(); }">
+                            @if (posts != null)
+                            {
+                                @foreach (var post in posts)
+                                {
+                                    <option value="@post.id_post"> @post.post_name</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                    <td><input type="checkbox" @bind="vs[l]" @bind:event="oninput" /></td>
                 </tr>
             }
         </tbody>
     </table>
-    <input type="button" value="Удалить записи" @onclick="Delete"/>
+    <input type="button" value="Удалить записи" @onclick="Delete" />
 }
 
 @code {
@@ -87,6 +110,8 @@ else
     public Kulkov.Data.Employee employee = new Kulkov.Data.Employee();
 
     public bool[] vs;
+
+    private List<Kulkov.Data.Post> posts;
 
     protected async Task Add()
     {
@@ -141,6 +166,7 @@ else
         employees = response.ToList();
         vs = new bool[employees.Count];
         response = null;
+        posts = (await PostGetter.GetAllPosts()).ToList();
     }
 }
 
