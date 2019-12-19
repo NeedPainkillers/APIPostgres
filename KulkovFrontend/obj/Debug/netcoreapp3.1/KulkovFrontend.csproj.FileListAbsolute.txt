@@ -6,9 +6,7 @@ C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\static
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\staticwebassets\KulkovFrontend.StaticWebAssets.xml
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\KulkovFrontend.RazorComponent.input.cache
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorDeclaration\App.razor.g.cs
-C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorDeclaration\Pages\Counter.razor.g.cs
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorDeclaration\Pages\Error.razor.g.cs
-C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorDeclaration\Pages\FetchData.razor.g.cs
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorDeclaration\Pages\Index.razor.g.cs
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorDeclaration\Shared\MainLayout.razor.g.cs
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorDeclaration\Shared\NavMenu.razor.g.cs
@@ -36,10 +34,8 @@ C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Kulkov
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorDeclaration\Pages\Employee.razor.g.cs
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorDeclaration\KulkovFrontend.dll
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\App.razor.g.cs
-C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\Pages\Counter.razor.g.cs
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\Pages\Employee.razor.g.cs
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\Pages\Error.razor.g.cs
-C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\Pages\FetchData.razor.g.cs
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\Pages\Index.razor.g.cs
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\Shared\MainLayout.razor.g.cs
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\Shared\NavMenu.razor.g.cs
@@ -54,3 +50,7 @@ C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorD
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\Pages\Salary.razor.g.cs
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorDeclaration\Pages\Department.razor.g.cs
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\Pages\Department.razor.g.cs
+C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorDeclaration\Pages\Dept_empl.razor.g.cs
+C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorDeclaration\Pages\Location.razor.g.cs
+C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\Pages\Dept_empl.razor.g.cs
+C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\Pages\Location.razor.g.cs

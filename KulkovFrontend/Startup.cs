@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using KulkovFrontend.Data;
 using Kulkov.Data;
 using Kulkov.Repository;
 
@@ -35,7 +34,6 @@ namespace KulkovFrontend
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<ILocationRepository, LocationRepository>();
             services.AddSingleton<IDepartmentRepository, DepartmentRepository>();
             services.AddSingleton<IEmployeeRepository, EmployeeRepository>();
