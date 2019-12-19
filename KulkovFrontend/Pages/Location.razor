@@ -1,0 +1,104 @@
+﻿@page "/loc"
+
+@using Kulkov.Repository
+@using System.Linq
+@using System.Collections.Generic
+@inject ILocationRepository Service
+
+<h1>Адреса</h1>
+
+<label for="inp" class="inp">
+    <input type="text" @bind-value="location.address" @bind-value:event="oninput" />
+    <span class="label">Адрес</span>
+    <span class="border"></span>
+</label>
+<label for="inp" class="inp">
+    <input type="datetime" @bind-value="location.city" @bind-value:event="onchange" />
+    <span class="label">Город</span>
+    <span class="border"></span>
+</label>
+
+<input type="button" value="Добавить" @onclick="Add" />
+
+@if (locations == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>Адрес</th>
+                <th>Город</th>
+                <th>Удалить</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < locations.Count; i++)
+            {
+                var l = i; //local index
+                <tr>
+                    <td>
+                        @locations[i].id_loc
+                    </td>
+                    <td><input type="text" @bind-value="locations[l].address" @bind-value:event="oninput" @onchange="() => { Update(l).Wait(); }" /></td>
+                    <td><input type="datetime" @bind-value="locations[l].city" @bind-value:event="onchange" @onfocusout="() => { Update(l).Wait(); }" /></td>
+                    <td><input type="checkbox" @bind="vs[l]" @bind:event="oninput" /></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <input type="button" value="Удалить записи" @onclick="Delete" />
+}
+
+@code {
+
+    public Kulkov.Data.Location location = new Kulkov.Data.Location();
+
+    public List<Kulkov.Data.Location> locations;
+
+    public bool[] vs;
+
+    protected async Task Add()
+    {
+        await Service.AddLocation(location);
+        location = new Kulkov.Data.Location();
+        await UpdateTable();
+    }
+
+    protected async Task Update(int row)
+    {
+        await Service.UpdateLocation(locations[row].id_loc, locations[row]);
+        //await UpdateTable();
+    }
+
+    protected async Task Delete()
+    {
+        for (int i = 0; i < vs.Length; i++)
+        {
+            if (vs[i])
+                await Service.RemoveLocation(locations[i].id_loc);
+        }
+        await UpdateTable();
+    }
+
+    protected async Task UpdateTable()
+    {
+        var response = await Service.GetAllLocations();
+        locations = response.ToList();
+        vs = null;
+        vs = new bool[locations.Count];
+        response = null;
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        var response = await Service.GetAllLocations();
+        locations = response.ToList();
+        vs = new bool[locations.Count];
+        response = null;
+    }
+}
+

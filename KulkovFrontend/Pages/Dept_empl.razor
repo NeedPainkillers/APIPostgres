@@ -1,0 +1,135 @@
+﻿@page "/depemp"
+
+@using Kulkov.Repository
+@using System.Linq
+@using System.Collections.Generic
+@inject IDepartmentRepository Service
+@inject IPostRepository GetterPost
+@inject IEmployeeRepository GetterEmp
+
+<h1>Сотрудники отделов</h1>
+
+<select class="form-control" @bind="@id_dep" @bind:event="oninput" @onchange="UpdateTable">
+
+    <option value="-1">Отдел</option>
+    @if (departments != null)
+    {
+        @foreach (var row in departments)
+        {
+            <option value="@row.id_dept"> @row.dept_name</option>
+        }
+    }
+</select>
+
+
+
+@if (employees == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <select class="form-control" @bind="@id_emp">
+
+        <option value="-1">Выберите сотрудника</option>
+        @if (allEmployees != null)
+        {
+            @foreach (var row in (from item in allEmployees.AsParallel()
+                                 join emp in employees.AsParallel() on item.id_emp equals emp.id_emp
+                                 where emp is null
+                                 select item))
+            {
+                <option value="@row.id_emp"> @row.last_name</option>
+            }
+        }
+    </select>
+
+    <input type="button" value="Добавить" @onclick="Add" />
+    <table class="table">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>Фамилия</th>
+                <th>Имя</th>
+                <th>Отчество</th>
+                <th>Пол</th>
+                <th>Дата найма</th>
+                <th>id должности</th>
+                <th>Удалить</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < employees.Count; i++)
+            {
+                var l = i; //local index
+                <tr>
+                    <td>@employees[i].id_emp</td>
+                    <td>@employees[l].last_name</td>
+                    <td>@employees[l].first_name</td>
+                    <td>@employees[l].patronymic</td>
+                    <td>@employees[l].gender</td>
+                    <td>@employees[l].hire_date</td>
+                    <td>@posts.Where(x => x.id_post.Equals(employees[l].id_post)).Take(1).First().post_name </td>
+                    <td><input type="checkbox" @bind="vs[l]" @bind:event="oninput" /></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <input type="button" value="Удалить записи" @onclick="Delete" />
+}
+
+@code {
+
+    [Parameter]
+    public int id_dep { get; set; } = -1;
+    [Parameter]
+    public int id_emp { get; set; } = -1;
+
+    public List<Kulkov.Data.Employee> employees;
+    public List<Kulkov.Data.Department> departments;
+    public List<Kulkov.Data.Post> posts;
+
+    private List<Kulkov.Data.Employee> allEmployees;
+
+    public bool[] vs;
+
+    protected async Task Add()
+    {
+        await Service.AddEmployee(id_dep, id_emp);
+
+        await UpdateTable();
+    }
+
+    //protected async Task Update(int row)
+    //{
+    //    await Service.UpdateLocation(employees[row].id_loc, employees[row]);
+    //    //await UpdateTable();
+    //}
+
+    protected async Task Delete()
+    {
+        for (int i = 0; i < vs.Length; i++)
+        {
+            if (vs[i])
+                await Service.DeleteEmployee(employees[i].id_emp);
+        }
+        await UpdateTable();
+    }
+
+    protected async Task UpdateTable()
+    {
+        var response = await Service.GetEmployees(id_dep);
+        employees = response.ToList();
+        vs = null;
+        vs = new bool[employees.Count];
+        response = null;
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        departments = (await Service.GetAllDepartments()).ToList();
+        posts = (await GetterPost.GetAllPosts()).ToList();
+        allEmployees = (await GetterEmp.GetAllEmployees()).ToList();
+    }
+}
+

@@ -37,7 +37,7 @@ namespace Kulkov.Repository
                 await connection.OpenAsync();
 
             await using (var cmd = new NpgsqlCommand("INSERT INTO taskdb.public.\"Location\" (address, city) " +
-                "VALUES ((@address), (@city));", connection))
+                String.Format("VALUES ('{0}', '{1}');", item.address, item.city), connection))
             {
                 cmd.Parameters.AddWithValue("address", item.address);
                 cmd.Parameters.AddWithValue("city", item.city);
@@ -115,11 +115,9 @@ namespace Kulkov.Repository
                 await connection.OpenAsync();
 
             await using (var cmd = new NpgsqlCommand("UPDATE taskdb.public.\"Location\" SET (address, city) =" +
-                " ((@address), (@city)) WHERE id_loc = (@id);", connection))
+               String.Format(" ('{0}', '{1}') WHERE id_loc = (@id);", item.address, item.city), connection))
             {
                 cmd.Parameters.AddWithValue("id", item.id_loc);
-                cmd.Parameters.AddWithValue("address", item.address);
-                cmd.Parameters.AddWithValue("city", item.city);
                 await cmd.ExecuteNonQueryAsync();
             }
         }

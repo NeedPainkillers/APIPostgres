@@ -17,7 +17,9 @@ namespace Kulkov.Repository
         Task<Department> GetDepartment(int id);
         Task<IEnumerable<Department>> GetDepartmentByName(int id);
         Task AddDepartment(Department item);
+        Task<IEnumerable<Employee>> GetEmployees (int id_dept);
         Task AddEmployee(int id_dep, int id_emp);
+        Task DeleteEmployee(int id);
         Task RemoveDepartment(int id);
         // обновление содержания (body) записи
         Task UpdateDepartment(int id, Department item);
@@ -49,9 +51,34 @@ namespace Kulkov.Repository
             }
         }
 
-        public Task AddEmployee(int id_dep, int id_emp)
+        public async Task AddEmployee(int id_dept, int id_emp)
         {
-            throw new NotImplementedException();
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
+
+            await using (var cmd = new NpgsqlCommand("INSERT INTO taskdb.public.\"dept_empl\" ( id_emp, id_dept) " +
+                "VALUES ((@id_emp), (@id_dept));", connection))
+            {
+                cmd.Parameters.AddWithValue("id_emp",   id_emp);
+                cmd.Parameters.AddWithValue("id_dept",  id_dept);
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task DeleteEmployee(int id)
+        {
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
+
+            await using (var cmd = new NpgsqlCommand("DELETE FROM \"public\".\"dept_empl\" WHERE \"id\" = (@id);", connection))
+            {
+                cmd.Parameters.AddWithValue("id", id);
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
 
         public async Task<IEnumerable<Department>> GetAllDepartments()
@@ -150,6 +177,34 @@ namespace Kulkov.Repository
                 }
             return Response;
 
+        }
+
+        public async Task<IEnumerable<Employee>> GetEmployees(int id_dept)
+        {
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
+
+            List<Employee> Response = new List<Employee>();
+            await using (var cmd = new NpgsqlCommand("SELECT e.*, CTID FROM public.\"dept_empl\" t" +
+                "join public.\"Employees\" e on e.id_emp = t.id_emp" +
+                "where t.id_dept = (@id_dept);", connection))
+            await using (var reader = await cmd.ExecuteReaderAsync())
+                while (await reader.ReadAsync())
+                {
+                    Response.Add(new Employee()
+                    {
+                        id_emp = Int32.Parse(reader.GetValue(0).ToString()),
+                        first_name = reader.GetValue(1).ToString(),
+                        last_name = reader.GetValue(2).ToString(),
+                        patronymic = reader.GetValue(3).ToString(),
+                        gender = reader.GetBoolean(4),
+                        hire_date = reader.GetDateTime(5),
+                        id_post = Int32.Parse(reader.GetValue(6).ToString())
+                    });
+                }
+            return Response;
         }
 
         public async Task RemoveDepartment(int id)
