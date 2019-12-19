@@ -12,12 +12,12 @@ namespace Kulkov.Repository
     public interface ILocationRepository
     {
         Task<IEnumerable<Location>> GetAllLocations();
-        Task<Location> GetLocation(string id);
-        Task<Location> GetLocationByDepartment(string id);
+        Task<Location> GetLocation(int id);
+        Task<Location> GetLocationByDepartment(int id);
         Task AddLocation(Location item);
-        void RemoveLocation(string id);
+        Task RemoveLocation(int id);
         // обновление содержания (body) записи
-        void UpdateLocation(string id, Location item);
+        Task UpdateLocation(int id, Location item);
     }
 
     public class LocationRepository : ILocationRepository
@@ -36,7 +36,7 @@ namespace Kulkov.Repository
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
 
-            await using (var cmd = new NpgsqlCommand("INSERT INTO taskdb.public.\"Locations\" (address, city) " +
+            await using (var cmd = new NpgsqlCommand("INSERT INTO taskdb.public.\"Location\" (address, city) " +
                 "VALUES ((@address), (@city));", connection))
             {
                 cmd.Parameters.AddWithValue("address", item.address);
@@ -53,7 +53,7 @@ namespace Kulkov.Repository
                 await connection.OpenAsync();
 
             List<Location> Response = new List<Location>();
-            await using (var cmd = new NpgsqlCommand("SELECT t.*, CTID FROM public.\"Locations\" t ORDER BY id_loc ASC", connection))
+            await using (var cmd = new NpgsqlCommand("SELECT t.*, CTID FROM public.\"Location\" t ORDER BY id_loc ASC", connection))
             await using (var reader = await cmd.ExecuteReaderAsync())
                 while (await reader.ReadAsync())
                 {
@@ -67,17 +67,14 @@ namespace Kulkov.Repository
             return Response;
         }
 
-        public async Task<Location> GetLocation(string id)
+        public async Task<Location> GetLocation(int id)
         {
             var connection = _context.GetConnection;
 
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
 
-            if (!Int32.TryParse(id, out int idi))
-                throw new Exception("id cannot be converted to integer");
-
-            await using var cmd = new NpgsqlCommand(String.Format("SELECT t.* FROM public.\"Locations\" t WHERE t.id_loc = {0}", idi), connection);
+            await using var cmd = new NpgsqlCommand(String.Format("SELECT t.* FROM public.\"Location\" t WHERE t.id_loc = {0}", id), connection);
             await using var reader = await cmd.ExecuteReaderAsync();
             return new Location()
             {
@@ -87,7 +84,7 @@ namespace Kulkov.Repository
             };
         }
 
-        public async Task<Location> GetLocationByDepartment(string id)
+        public async Task<Location> GetLocationByDepartment(int id)
         {
             var connection = _context.GetConnection;
 
@@ -96,28 +93,28 @@ namespace Kulkov.Repository
             throw new NotImplementedException();
         }
 
-        public async void RemoveLocation(string id)
+        public async Task RemoveLocation(int id)
         {
             var connection = _context.GetConnection;
 
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
 
-            await using (var cmd = new NpgsqlCommand("DELETE FROM \"public\".\"Locations\" WHERE \"id_loc\" = (@id);", connection))
+            await using (var cmd = new NpgsqlCommand("DELETE FROM \"public\".\"Location\" WHERE \"id_loc\" = (@id);", connection))
             {
                 cmd.Parameters.AddWithValue("id", id);
                 await cmd.ExecuteNonQueryAsync();
             }
         }
 
-        public async void UpdateLocation(string id, Location item)
+        public async Task UpdateLocation(int id, Location item)
         {
             var connection = _context.GetConnection;
 
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
 
-            await using (var cmd = new NpgsqlCommand("UPDATE taskdb.public.\"Departments\" SET (address, city) =" +
+            await using (var cmd = new NpgsqlCommand("UPDATE taskdb.public.\"Location\" SET (address, city) =" +
                 " ((@address), (@city)) WHERE id_loc = (@id);", connection))
             {
                 cmd.Parameters.AddWithValue("id", item.id_loc);

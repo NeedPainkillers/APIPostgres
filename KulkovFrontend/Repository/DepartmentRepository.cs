@@ -14,12 +14,13 @@ namespace Kulkov.Repository
     {
         Task<IEnumerable<Department>> GetAllDepartments();
         Task<IEnumerable<Department>> GetDepartmentsHaving();
-        Task<Department> GetDepartment(string id);
-        Task<IEnumerable<Department>> GetDepartmentByName(string id);
+        Task<Department> GetDepartment(int id);
+        Task<IEnumerable<Department>> GetDepartmentByName(int id);
         Task AddDepartment(Department item);
-        void RemoveDepartment(string id);
+        Task AddEmployee(int id_dep, int id_emp);
+        Task RemoveDepartment(int id);
         // обновление содержания (body) записи
-        void UpdateDepartment(string id, Department item);
+        Task UpdateDepartment(int id, Department item);
     }
 
     public class DepartmentRepository : IDepartmentRepository
@@ -40,13 +41,17 @@ namespace Kulkov.Repository
                 await connection.OpenAsync();
 
             await using (var cmd = new NpgsqlCommand("INSERT INTO taskdb.public.\"Departments\" (dept_name, id_head, id_loc) " +
-                "VALUES ((@name), (@head), (@loc));", connection))
+                string.Format("VALUES ('{0}', (@head), (@loc));", item.dept_name), connection))
             {
-                cmd.Parameters.AddWithValue("name", item.dept_name);
                 cmd.Parameters.AddWithValue("head", item.id_head);
                 cmd.Parameters.AddWithValue("loc", item.id_loc);
                 await cmd.ExecuteNonQueryAsync();
             }
+        }
+
+        public Task AddEmployee(int id_dep, int id_emp)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<IEnumerable<Department>> GetAllDepartments()
@@ -72,17 +77,15 @@ namespace Kulkov.Repository
             return Response;
         }
 
-        public async Task<Department> GetDepartment(string id)
+        public async Task<Department> GetDepartment(int id)
         {
             var connection = _context.GetConnection;
 
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
 
-            if (!Int32.TryParse(id, out int idi))
-                throw new Exception("id cannot be converted to integer");
 
-            await using var cmd = new NpgsqlCommand(String.Format("SELECT t.* FROM public.\"Departments\" t WHERE t.id_dept = {0}", idi), connection);
+            await using var cmd = new NpgsqlCommand(String.Format("SELECT t.* FROM public.\"Departments\" t WHERE t.id_dept = {0}", id), connection);
             await using var reader = await cmd.ExecuteReaderAsync();
             return new Department()
             {
@@ -93,7 +96,7 @@ namespace Kulkov.Repository
             };
         }
 
-        public async Task<IEnumerable<Department>> GetDepartmentByName(string id)
+        public async Task<IEnumerable<Department>> GetDepartmentByName(int id)
         {
             var connection = _context.GetConnection;
 
@@ -149,7 +152,7 @@ namespace Kulkov.Repository
 
         }
 
-        public async void RemoveDepartment(string id)
+        public async Task RemoveDepartment(int id)
         {
             var connection = _context.GetConnection;
 
@@ -163,7 +166,7 @@ namespace Kulkov.Repository
             }
         }
 
-        public async void UpdateDepartment(string id, Department item)
+        public async Task UpdateDepartment(int id, Department item)
         {
             var connection = _context.GetConnection;
 
@@ -171,9 +174,9 @@ namespace Kulkov.Repository
                 await connection.OpenAsync();
 
             await using (var cmd = new NpgsqlCommand("UPDATE taskdb.public.\"Departments\" SET (dept_name, id_head, id_loc) =" +
-                " ((@name), (@head), (@lock)) WHERE id_dept = (@id);", connection))
+                string.Format(" ('{0}', (@head), (@loc)) WHERE id_dept = (@id);", item.dept_name), connection))
             {
-                cmd.Parameters.AddWithValue("name", item.dept_name);
+                cmd.Parameters.AddWithValue("id", id);
                 cmd.Parameters.AddWithValue("head", item.id_head);
                 cmd.Parameters.AddWithValue("loc", item.id_loc);
                 await cmd.ExecuteNonQueryAsync();

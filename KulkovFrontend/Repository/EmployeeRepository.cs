@@ -143,11 +143,12 @@ namespace Kulkov.Repository
                 {
                     Response.Add(new Employee()
                     {
-                        first_name = reader.GetValue(0).ToString(),
-                        last_name = reader.GetValue(1).ToString(),
-                        patronymic = reader.GetValue(2).ToString(),
-                        salary = new Salary() { salary = reader.GetInt32(3), time_update = reader.GetDateTime(4) },
-                    });
+                        id_emp = reader.GetInt32(0),
+                        first_name = reader.GetValue(1).ToString(),
+                        last_name = reader.GetValue(2).ToString(),
+                        patronymic = reader.GetValue(3).ToString(),
+                        salary = new Salary() { salary = reader.IsDBNull(4) ? -1 : reader.GetInt32(4), fee = reader.IsDBNull(5) ? -1 : reader.GetInt32(5), time_update = reader.IsDBNull(6) ? DateTime.Now : reader.GetDateTime(6) },
+                    }); ;
                 }
             return Response;
         }

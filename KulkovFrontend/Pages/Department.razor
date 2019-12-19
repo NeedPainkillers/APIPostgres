@@ -1,0 +1,151 @@
+﻿@page "/dep"
+
+@using Kulkov.Data
+@using Kulkov.Repository
+@using System
+@using System.Linq
+@using System.Collections.Generic
+@inject IEmployeeRepository EmpGetter
+@inject ILocationRepository LocGetter
+@inject IDepartmentRepository Service
+
+<h1>Отделы</h1>
+
+<label for="inp" class="inp">
+    <input type="text" @bind-value="department.dept_name" @bind-value:event="oninput" />
+    <span class="label">Название отдела</span>
+    <span class="border"></span>
+</label>
+
+<select class="form-control" @bind="@department.id_loc">
+
+    <option value="-1">Местоположение</option>
+    @if (locations != null)
+    {
+        @foreach (var row in locations)
+        {
+            <option value="@row.id_loc"> @row.city -- @row.address</option>
+        }
+    }
+</select>
+<select class="form-control" @bind="@department.id_head">
+
+    <option value="-1">Начальник</option>
+    @if (employees != null)
+    {
+        @foreach (var row in employees)
+        {
+            <option value="@row.id_emp"> @row.id_emp -- @row.last_name @row.first_name</option>
+        }
+    }
+</select>
+
+<input type="button" value="Добавить" @onclick="Add" />
+
+@if (departments == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>Название</th>
+                <th>Адрес</th>
+                <th>Начальник</th>
+                <th>Удалить</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < departments.Count; i++)
+            {
+                var l = i; //local index
+                <tr>
+                    <td>@employees[i].id_emp</td>
+                    <td><input type="text" @bind-value="departments[l].dept_name" @bind-value:event="oninput" @onchange="() => { Update(l).Wait(); }" /></td>
+                    <td>
+                        <select class="" @bind="@departments[l].id_loc" @bind:event="oninput" @onchange="() => { Update(l).Wait(); }">
+                            @if (locations != null)
+                            {
+                                @foreach (var row in locations)
+                                {
+                                    <option value="@row.id_loc"> @row.city -- @row.address</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <select class="" @bind="@departments[l].id_head" @bind:event="oninput" @onchange="() => { Update(l).Wait(); }">
+                            @if (employees != null)
+                            {
+                                @foreach (var row in employees)
+                                {
+                                    <option value="@row.id_emp"> @row.id_emp -- @row.last_name @row.first_name</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                    <td><input type="checkbox" @bind="vs[l]" @bind:event="oninput" /></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <input type="button" value="Удалить записи" @onclick="Delete" />
+}
+
+@code {
+    public List<Kulkov.Data.Department> departments;
+
+    public Kulkov.Data.Department department = new Kulkov.Data.Department();
+
+    public bool[] vs;
+
+    private List<Kulkov.Data.Location> locations;
+    private List<Kulkov.Data.Employee> employees;
+
+    protected async Task Add()
+    {
+        await Service.AddDepartment(department);
+        department = new Kulkov.Data.Department();
+        await UpdateTable();
+    }
+
+    
+    protected async Task Update(int row)
+    {
+        await Service.UpdateDepartment(departments[row].id_dept, departments[row]);
+        //await UpdateTable();
+    }
+
+    protected async Task Delete()
+    {
+        for (int i = 0; i < vs.Length; i++)
+        {
+            if (vs[i])
+                await Service.RemoveDepartment(departments[i].id_dept);
+        }
+        await UpdateTable();
+    }
+
+    protected async Task UpdateTable()
+    {
+        var response = await Service.GetAllDepartments();
+        departments = response.ToList();
+        vs = null;
+        vs = new bool[departments.Count];
+        response = null;
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        var response = await Service.GetAllDepartments();
+        departments = response.ToList();
+        vs = new bool[departments.Count];
+        response = null;
+        locations = (await LocGetter.GetAllLocations()).ToList();
+        employees = (await EmpGetter.GetAllEmployees()).ToList();
+    }
+}
+

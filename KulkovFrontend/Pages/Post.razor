@@ -1,0 +1,105 @@
+﻿@page "/post"
+
+@using Kulkov.Data
+@using Kulkov.Repository
+@using System
+@using System.Linq
+@using System.Collections.Generic
+@inject IPostRepository Service
+
+<h1>Должности</h1>
+
+<label for="inp" class="inp">
+    <input type="text" @bind-value="post.post_name" @bind-value:event="oninput" />
+    <span class="label">Название должности</span>
+    <span class="border"></span>
+</label>
+<label for="inp" class="inp">
+    <input type="datetime" @bind-value="post.date_start" @bind-value:event="onchange" />
+    <span class="label">Дата создания</span>
+    <span class="border"></span>
+</label>
+
+<input type="button" value="Добавить" @onclick="Add" />
+
+@if (posts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>Название должности</th>
+                <th>Дата создания</th>
+                <th>Удалить</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < posts.Count; i++)
+            {
+                var l = i; //local index
+                <tr>
+                    <td>@posts[i].id_post
+                    </td>
+                    <td><input type="text" @bind-value="posts[l].post_name" @bind-value:event="oninput" @onchange="() => { Update(l).Wait(); }" /></td>
+                    <td><input type="datetime" @bind-value="posts[l].date_start" @bind-value:event="onchange"  @onfocusout="() => { Update(l).Wait(); }" /></td>
+                    <td><input type="checkbox" @bind="vs[l]" @bind:event="oninput" /></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <input type="button" value="Удалить записи" @onclick="Delete" />
+}
+
+@code {
+
+    public Kulkov.Data.Post post = new Kulkov.Data.Post();
+
+    public List<Kulkov.Data.Post> posts;
+
+    public bool[] vs;
+
+    protected async Task Add()
+    {
+        await Service.AddPost(post);
+        post = new Kulkov.Data.Post();
+        await UpdateTable();
+    }
+
+    protected async Task Update(int row)
+    {
+        await Service.UpdatePost(posts[row].id_post, posts[row]);
+        //await UpdateTable();
+    }
+
+    protected async Task Delete()
+    {
+        for (int i = 0; i < vs.Length; i++)
+        {
+            if (vs[i])
+                await Service.RemovePost(posts[i].id_post);
+        }
+        await UpdateTable();
+    }
+
+    protected async Task UpdateTable()
+    {
+        var response = await Service.GetAllPosts();
+        posts = response.ToList();
+        vs = null;
+        vs = new bool[posts.Count];
+        response = null;
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        var response = await Service.GetAllPosts();
+        posts = response.ToList();
+        vs = new bool[posts.Count];
+        response = null;
+    }
+}
+

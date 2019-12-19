@@ -1,0 +1,132 @@
+﻿@page "/sal"
+
+@using Kulkov.Data
+@using Kulkov.Repository
+@using System
+@using System.Linq
+@using System.Collections.Generic
+@inject IEmployeeRepository EmpGetter
+@inject ISalaryRepository Service
+
+<h1>Зарплата</h1>
+
+<select class="form-control" @bind="@salary.id_emp">
+
+    <option value="-1">Выберите сотрудника</option>
+    @if (employees != null)
+    {
+        @foreach (var row in employees)
+        {
+            if (row.salary.salary != -1)
+                continue;
+            <option value="@row.id_emp"> @row.id_emp -- @row.first_name</option>
+        }
+    }
+</select>
+
+<label for="inp" class="inp">
+    <input type="text" @bind-value="salary.salary" @bind-value:event="oninput" />
+    <span class="label">Зарплата</span>
+    <span class="border"></span>
+</label>
+<label for="inp" class="inp">
+    <input type="text" @bind-value="salary.fee" @bind-value:event="oninput" />
+    <span class="label">Аванс</span>
+    <span class="border"></span>
+</label>
+
+
+<input type="button" value="Добавить" @onclick="Add" />
+
+@if (employees == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>Фамилия</th>
+                <th>Имя</th>
+                <th>Отчество</th>
+                <th>Зарплата</th>
+                <th>Аванс</th>
+                <th>Дата обновления</th>
+                @*<th>Удалить</th>*@
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < employees.Count; i++)
+            {
+                var l = i; //local index
+                if (employees[l].salary.salary == -1)
+                    continue;
+                <tr>
+                    <td>@employees[i].id_emp</td>
+                    <td>@employees[i].last_name</td>
+                    <td>@employees[i].first_name</td>
+                    <td>@employees[i].patronymic</td>
+                    <td><input type="text" @bind-value="employees[l].salary.salary" @bind-value:event="oninput" @onchange="() => { Update(l).Wait(); }" /></td>
+                    <td><input type="text" @bind-value="employees[l].salary.fee" @bind-value:event="oninput" @onchange="() => { Update(l).Wait(); }" /></td>
+                    <td>@employees[i].salary.time_update</td>
+                    @*<td><input type="checkbox" @bind="vs[l]" @bind:event="oninput" /></td>*@
+                </tr>
+            }
+        </tbody>
+    </table>
+    @*<input type="button" value="Удалить записи" @onclick="Delete" />*@
+}
+
+@code {
+    public List<Kulkov.Data.Employee> employees;
+
+    public List<Kulkov.Data.Salary> salaries;
+
+
+    public Kulkov.Data.Salary salary = new Kulkov.Data.Salary();
+
+    public bool[] vs;
+
+    protected async Task Add()
+    {
+        await Service.AddSalary(salary);
+        salary = new Kulkov.Data.Salary();
+        await UpdateTable();
+    }
+
+    protected async Task Update(int row)
+    {
+        await Service.UpdateSalary(employees[row].id_emp, employees[row].salary);
+        //await UpdateTable();
+    }
+
+    protected async Task Delete()
+    {
+        for (int i = 0; i < vs.Length; i++)
+        {
+            if (vs[i])
+                await Service.RemoveSalary(employees[i].id_emp);
+        }
+        await UpdateTable();
+    }
+
+    protected async Task UpdateTable()
+    {
+        var response = await EmpGetter.GetAllEmployees(2, false);
+        employees = response.ToList();
+        vs = null;
+        vs = new bool[employees.Count];
+        response = null;
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        var response = await EmpGetter.GetAllEmployees(2, false);
+        employees = response.ToList();
+        vs = new bool[employees.Count];
+        response = null;
+    }
+}
+

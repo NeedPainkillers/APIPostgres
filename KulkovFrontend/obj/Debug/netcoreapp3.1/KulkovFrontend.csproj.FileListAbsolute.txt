@@ -48,3 +48,9 @@ C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Kulkov
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\KulkovFrontend.csproj.CopyComplete
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\KulkovFrontend.dll
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\KulkovFrontend.pdb
+C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorDeclaration\Pages\Post.razor.g.cs
+C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\Pages\Post.razor.g.cs
+C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorDeclaration\Pages\Salary.razor.g.cs
+C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\Pages\Salary.razor.g.cs
+C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorDeclaration\Pages\Department.razor.g.cs
+C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\Pages\Department.razor.g.cs

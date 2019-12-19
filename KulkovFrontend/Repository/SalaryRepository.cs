@@ -11,13 +11,13 @@ namespace Kulkov.Repository
     public interface ISalaryRepository
     {
         Task<IEnumerable<Salary>> GetAllSalaries();
-        Task<Salary> GetSalary(string id);
-        Task<Salary> GetSalaryByName(string id);
+        Task<Salary> GetSalary(int id);
+        Task<Salary> GetSalaryByName(int id);
         Task AddSalary(Salary item);
-        void RemoveSalary(string id);
+        Task RemoveSalary(int id);
         // обновление содержания (body) записи
-        void UpdateSalary(string id, Salary item);
-        void TransactionExample(int id1, int id2);
+        Task UpdateSalary(int id, Salary item);
+        Task TransactionExample(int id1, int id2);
         Task<bool> IndexSalaries();
     }
 
@@ -70,17 +70,15 @@ namespace Kulkov.Repository
             return Response;
         }
 
-        public async Task<Salary> GetSalary(string id)
+        public async Task<Salary> GetSalary(int id)
         {
             var connection = _context.GetConnection;
 
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
 
-            if (!Int32.TryParse(id, out int idi))
-                throw new Exception("id cannot be converted to integer");
 
-            await using var cmd = new NpgsqlCommand(String.Format("SELECT t.* FROM public.\"Salaries\" t WHERE t.id_emp = {0}", idi), connection);
+            await using var cmd = new NpgsqlCommand(String.Format("SELECT t.* FROM public.\"Salaries\" t WHERE t.id_emp = {0}", id), connection);
             await using var reader = await cmd.ExecuteReaderAsync();
             return new Salary()
             {
@@ -91,7 +89,7 @@ namespace Kulkov.Repository
             };
         }
 
-        public async Task<Salary> GetSalaryByName(string id)
+        public async Task<Salary> GetSalaryByName(int id)
         {
             var connection = _context.GetConnection;
 
@@ -113,7 +111,7 @@ namespace Kulkov.Repository
             return reader.GetBoolean(0);
         }
 
-        public async void RemoveSalary(string id)
+        public async Task RemoveSalary(int id)
         {
             var connection = _context.GetConnection;
 
@@ -127,7 +125,7 @@ namespace Kulkov.Repository
             }
         }
 
-        public async void TransactionExample(int id1, int id2)
+        public async Task TransactionExample(int id1, int id2)
         {
             var connection = _context.GetConnection;
 
@@ -147,7 +145,7 @@ namespace Kulkov.Repository
             }
         }
 
-        public async void UpdateSalary(string id, Salary item)
+        public async Task UpdateSalary(int id, Salary item)
         {
             var connection = _context.GetConnection;
 
@@ -155,11 +153,11 @@ namespace Kulkov.Repository
                 await connection.OpenAsync();
 
             await using (var cmd = new NpgsqlCommand("UPDATE taskdb.public.\"Salaries\" SET (salary, fee) =" +
-                " ((@address), (@city)) WHERE id_emp = (@id);", connection))
+                " ((@salary), (@fee)) WHERE id_emp = (@id);", connection))
             {
-                cmd.Parameters.AddWithValue("id", item.id_emp);
-                cmd.Parameters.AddWithValue("address", item.salary);
-                cmd.Parameters.AddWithValue("city", item.fee);
+                cmd.Parameters.AddWithValue("id", id);
+                cmd.Parameters.AddWithValue("salary", item.salary);
+                cmd.Parameters.AddWithValue("fee", item.fee);
                 await cmd.ExecuteNonQueryAsync();
             }
         }
