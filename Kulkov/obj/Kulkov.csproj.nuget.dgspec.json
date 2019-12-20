@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\a7aro\\source\\repos\\Kulkov\\Kulkov\\Kulkov.csproj": {}
+    "C:\\Users\\apcxo\\source\\repos\\APIPostges\\Kulkov\\Kulkov.csproj": {}
   },
   "projects": {
-    "C:\\Users\\a7aro\\source\\repos\\Kulkov\\Kulkov\\Kulkov.csproj": {
+    "C:\\Users\\apcxo\\source\\repos\\APIPostges\\Kulkov\\Kulkov.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\a7aro\\source\\repos\\Kulkov\\Kulkov\\Kulkov.csproj",
+        "projectUniqueName": "C:\\Users\\apcxo\\source\\repos\\APIPostges\\Kulkov\\Kulkov.csproj",
         "projectName": "Kulkov",
-        "projectPath": "C:\\Users\\a7aro\\source\\repos\\Kulkov\\Kulkov\\Kulkov.csproj",
-        "packagesPath": "C:\\Users\\a7aro\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\a7aro\\source\\repos\\Kulkov\\Kulkov\\obj\\",
+        "projectPath": "C:\\Users\\apcxo\\source\\repos\\APIPostges\\Kulkov\\Kulkov.csproj",
+        "packagesPath": "C:\\Users\\apcxo\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\apcxo\\source\\repos\\APIPostges\\Kulkov\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\a7aro\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\apcxo\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [

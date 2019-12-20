@@ -132,12 +132,13 @@ namespace Kulkov.Repository
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
 
-            await using (var cmd = new NpgsqlCommand("START TRANSACTION;" +
-                "CALL example_transact((@id1)); " +
-                "savepoint one; " +
-                "CALL example_transact((@id2)); " +
-                "rollback to one; " +
-                "COMMIT;", connection))
+            await using (var cmd = 
+                new NpgsqlCommand("START TRANSACTION;" +
+                                 "CALL example_transact((@id1)); " +
+                                 "savepoint one; " +
+                                 "CALL example_transact((@id2)); " +
+                                 "rollback to one; " +
+                                 "COMMIT;", connection))
             {
                 cmd.Parameters.AddWithValue("id1", id1);
                 cmd.Parameters.AddWithValue("id2", id2);
@@ -152,7 +153,8 @@ namespace Kulkov.Repository
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
 
-            await using (var cmd = new NpgsqlCommand("UPDATE taskdb.public.\"Salaries\" SET (salary, fee) =" +
+            await using (var cmd = new NpgsqlCommand(
+                "UPDATE taskdb.public.\"Salaries\" SET (salary, fee) =" +
                 " ((@salary), (@fee)) WHERE id_emp = (@id);", connection))
             {
                 cmd.Parameters.AddWithValue("id", id);

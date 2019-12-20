@@ -1,0 +1,49 @@
+﻿@page "/have"
+
+@using Kulkov.Repository
+@using System.Linq
+@using System.Collections.Generic
+@inject IDepartmentRepository Service
+
+<h1>Having example</h1>
+
+
+@if (departments == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>Название отдела</th>
+                <th>Суммарная зарплата в отделе</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < departments.Count; i++)
+            {
+                var l = i; //local index
+                <tr>
+                    <td>@departments[l].id_dept</td>
+                    <td>@departments[l].dept_name</td>
+                    <td>@departments[l].additionalInfo</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    private List<Kulkov.Data.Department> departments;
+
+
+    protected async override Task OnInitializedAsync()
+    {
+        departments = (await Service.GetDepartmentsHaving()).ToList();
+    }
+}
+

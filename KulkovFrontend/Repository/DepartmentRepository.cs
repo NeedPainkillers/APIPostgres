@@ -161,7 +161,7 @@ namespace Kulkov.Repository
 
             List<Department> Response = new List<Department>();
             // Retrieve all rows
-            await using (var cmd = new NpgsqlCommand("SELECT d.id_dept, SUM(s.salary) FROM public.\"Employees\" e " +
+            await using (var cmd = new NpgsqlCommand("SELECT d.id_dept, d.dept_name, SUM(s.salary) FROM public.\"Employees\" e " +
                                                     "LEFT JOIN public.\"Salaries\" s ON s.id_emp = e.id_emp " +
                                                     "LEFT JOIN public.\"dept_empl\" d ON d.id_emp = e.id_emp " +
                                                     "GROUP BY d.id_dept" +
@@ -173,7 +173,8 @@ namespace Kulkov.Repository
                     Response.Add(new Department()
                     {
                         id_dept = reader.GetInt32(0),
-                        additionalInfo = JsonSerializer.Serialize(new { Salaries = reader.GetValue(1).ToString() })
+                        dept_name = reader.GetString(1),
+                        additionalInfo = reader.GetValue(2).ToString()
                     });
                 }
             return Response;

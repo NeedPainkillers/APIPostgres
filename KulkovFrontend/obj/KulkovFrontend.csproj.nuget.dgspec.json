@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\a7aro\\source\\repos\\Kulkov\\KulkovFrontend\\KulkovFrontend.csproj": {}
+    "C:\\Users\\apcxo\\source\\repos\\APIPostges\\KulkovFrontend\\KulkovFrontend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\a7aro\\source\\repos\\Kulkov\\KulkovFrontend\\KulkovFrontend.csproj": {
+    "C:\\Users\\apcxo\\source\\repos\\APIPostges\\KulkovFrontend\\KulkovFrontend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\a7aro\\source\\repos\\Kulkov\\KulkovFrontend\\KulkovFrontend.csproj",
+        "projectUniqueName": "C:\\Users\\apcxo\\source\\repos\\APIPostges\\KulkovFrontend\\KulkovFrontend.csproj",
         "projectName": "KulkovFrontend",
-        "projectPath": "C:\\Users\\a7aro\\source\\repos\\Kulkov\\KulkovFrontend\\KulkovFrontend.csproj",
-        "packagesPath": "C:\\Users\\a7aro\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\a7aro\\source\\repos\\Kulkov\\KulkovFrontend\\obj\\",
+        "projectPath": "C:\\Users\\apcxo\\source\\repos\\APIPostges\\KulkovFrontend\\KulkovFrontend.csproj",
+        "packagesPath": "C:\\Users\\apcxo\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\apcxo\\source\\repos\\APIPostges\\KulkovFrontend\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\a7aro\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\apcxo\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [

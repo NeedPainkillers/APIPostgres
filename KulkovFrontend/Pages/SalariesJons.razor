@@ -1,0 +1,80 @@
+﻿@page "/salj"
+
+@using Kulkov.Repository
+@using System.Linq
+@using System.Collections.Generic
+@inject ISalaryRepository Service
+@inject IEmployeeRepository GetterEmp
+
+<h1>Операции над зарплатами</h1>
+
+
+<input type="button" @onclick="IndexSalaries" value="Проиндексировать зарплаты" />
+
+@if (id1 == id2)
+{
+    <p>Индексы не могут быть одинаковы</p>
+}
+else
+{
+    <input type="button" @onclick="TransactionExample" value="Пример транзакции с rollback" />
+}
+<select class="form-control" @bind="@id1">
+
+    <option value="-1">Выберите сотрудника</option>
+    @if (employees != null)
+    {
+        @foreach (var row in employees)
+        {
+            <option value="@row.id_emp"> @row.last_name</option>
+        }
+    }
+</select>
+<select class="form-control" @bind="@id2">
+
+    <option value="-2">Выберите сотрудника</option>
+    @if (employees != null)
+    {
+        @foreach (var row in employees)
+        {
+            <option value="@row.id_emp"> @row.last_name</option>
+        }
+    }
+</select>
+
+@if (state)
+{
+    <p>Зарплаты проиндексированы</p>
+}
+else
+{
+
+}
+
+
+@code {
+    [Parameter]
+    public bool state { get; set; } = false;
+    [Parameter]
+    public int id1 { get; set; } = -1;
+    [Parameter]
+    public int id2 { get; set; } = -2;
+
+    private List<Kulkov.Data.Employee> employees;
+
+    protected async Task TransactionExample()
+    {
+        await Service.TransactionExample(id1, id2);
+    }
+
+    protected async Task IndexSalaries()
+    {
+        state = await Service.IndexSalaries();
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        employees = (await GetterEmp.GetAllEmployees()).ToList();
+    }
+}
+

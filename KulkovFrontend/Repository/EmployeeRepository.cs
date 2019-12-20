@@ -286,7 +286,7 @@ namespace Kulkov.Repository
                                                                     "e.first_name, " +
                                                                     "e.patronymic, " +
                                                                     "s.salary, " +
-                                                                    "CASE WHEN s.salary = 0 or s.salary is null THEN 'not given yet' " +
+                                                                    "CASE WHEN s.salary = 0 or s.salary is null THEN 'Не назначена' " +
                                                                     "ELSE CAST(calculate_salary(s.salary, s.fee) as VARCHAR(20)) " +
                                                                     "END AS salary_monthly " +
                                                                     "FROM  public.\"Employees\" e " +
