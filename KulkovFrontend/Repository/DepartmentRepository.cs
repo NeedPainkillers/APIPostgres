@@ -161,10 +161,11 @@ namespace Kulkov.Repository
 
             List<Department> Response = new List<Department>();
             // Retrieve all rows
-            await using (var cmd = new NpgsqlCommand("SELECT d.id_dept, d.dept_name, SUM(s.salary) FROM public.\"Employees\" e " +
+            await using (var cmd = new NpgsqlCommand("SELECT d.id_dept, d1.dept_name, SUM(s.salary) FROM public.\"Employees\" e " +
                                                     "LEFT JOIN public.\"Salaries\" s ON s.id_emp = e.id_emp " +
                                                     "LEFT JOIN public.\"dept_empl\" d ON d.id_emp = e.id_emp " +
-                                                    "GROUP BY d.id_dept" +
+                                                    "LEFT JOIN public.\"Departments\" d1 ON d1.id_dept = d.id_dept " +
+                                                    "GROUP BY d.id_dept, d1.id_dept " +
                                                     "HAVING SUM(s.salary) > 5000;"
                                                     , connection))
             await using (var reader = await cmd.ExecuteReaderAsync())

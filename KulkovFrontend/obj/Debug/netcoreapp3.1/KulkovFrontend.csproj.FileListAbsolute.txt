@@ -54,3 +54,9 @@ C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorD
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorDeclaration\Pages\Location.razor.g.cs
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\Pages\Dept_empl.razor.g.cs
 C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\Pages\Location.razor.g.cs
+C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorDeclaration\Pages\Case.razor.g.cs
+C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorDeclaration\Pages\Having.razor.g.cs
+C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\RazorDeclaration\Pages\SalariesJons.razor.g.cs
+C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\Pages\Case.razor.g.cs
+C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\Pages\Having.razor.g.cs
+C:\Users\a7aro\source\repos\Kulkov\KulkovFrontend\obj\Debug\netcoreapp3.1\Razor\Pages\SalariesJons.razor.g.cs

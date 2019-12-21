@@ -282,7 +282,7 @@ namespace Kulkov.Repository
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
 
-            await using var cmd = new NpgsqlCommand(String.Format("SELECT e.last_name, " +
+            await using var cmd = new NpgsqlCommand("SELECT e.last_name, " +
                                                                     "e.first_name, " +
                                                                     "e.patronymic, " +
                                                                     "s.salary, " +
@@ -290,18 +290,22 @@ namespace Kulkov.Repository
                                                                     "ELSE CAST(calculate_salary(s.salary, s.fee) as VARCHAR(20)) " +
                                                                     "END AS salary_monthly " +
                                                                     "FROM  public.\"Employees\" e " +
-                                                                    "LEFT JOIN public.\"Salaries\" s ON s.id_emp = e.id_emp" +
-                                                                    "WHERE e.id_emp = {0};", id), connection);
-            await using var reader = await cmd.ExecuteReaderAsync();
-            if (!Int32.TryParse(reader.GetString(4), out int fee))
-                fee = -1;
-            return new Employee()
+                                                                    "LEFT JOIN public.\"Salaries\" s ON s.id_emp = e.id_emp " +
+                                                                    String.Format("WHERE e.id_emp = {0};", id), connection);
+            await using (var reader = await cmd.ExecuteReaderAsync())
             {
-                first_name = reader.GetValue(0).ToString(),
-                last_name = reader.GetValue(1).ToString(),
-                patronymic = reader.GetValue(2).ToString(),
-                salary = new Salary() { salary = reader.GetInt32(3), fee = fee }
-            };
+                reader.ReadAsync();
+                if (!Int32.TryParse(reader.GetValue(3).ToString(), out int fee))
+                    fee = -1;
+                return new Employee()
+                {
+                    last_name = reader.GetValue(0).ToString(),
+                    first_name = reader.GetValue(1).ToString(),
+                    patronymic = reader.GetValue(2).ToString(),
+                    salary = new Salary() { fee = fee },
+                    additionalInfo = reader.GetString(4)
+                };
+            }
         }
 
         public async Task<IEnumerable<Employee>> GetEmployeesCorr()

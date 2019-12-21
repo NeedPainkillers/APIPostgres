@@ -8,7 +8,19 @@
 <h1>Case example</h1>
 
 
-@if (employees == null)
+<select class="form-control" @bind="@id" @bind:event="oninput" @onchange="Update">
+
+    <option value="-1">Выберите сотрудника</option>
+    @if (employees != null)
+    {
+        @foreach (var row in employees)
+        {
+            <option value="@row.id_emp"> @row.last_name</option>
+        }
+    }
+</select>
+
+@if (employee == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -17,33 +29,35 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>id</th>
                 <th>Фамилия</th>
                 <th>Имя</th>
                 <th>Отчество</th>
-                <th>Зарплата</th>
+                <th>Доход в месяц</th>
             </tr>
         </thead>
         <tbody>
-            @for (int i = 0; i < employees.Count; i++)
-            {
-                var l = i; //local index
-                <tr>
-                    <td>@employees[i].id_emp</td>
-                    <td>@employees[l].last_name</td>
-                    <td>@employees[l].first_name</td>
-                    <td>@employees[l].patronymic</td>
-                    <td>@employees[l].salary.salary</td>
-                </tr>
-            }
+            <tr>
+                <td>@employee.last_name</td>
+                <td>@employee.first_name</td>
+                <td>@employee.patronymic</td>
+                <td>@employee.additionalInfo</td>
+            </tr>
+
         </tbody>
     </table>
 }
 
 @code {
-    
-    private List<Kulkov.Data.Employee> employees;
+    [Parameter]
+    public int id { get; set; } = -1;
 
+    private List<Kulkov.Data.Employee> employees;
+    private Kulkov.Data.Employee employee;
+
+    protected async Task Update()
+    {
+        employee = (await Service.GetEmployeeCase(id));
+    }
 
     protected async override Task OnInitializedAsync()
     {

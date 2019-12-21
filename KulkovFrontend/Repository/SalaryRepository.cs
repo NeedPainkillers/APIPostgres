@@ -107,8 +107,9 @@ namespace Kulkov.Repository
                 await connection.OpenAsync();
 
             await using var cmd = new NpgsqlCommand("select sal_cur()", connection);
-            await using var reader = await cmd.ExecuteReaderAsync();
-            return reader.GetBoolean(0);
+            //await using var reader = await cmd.ExecuteReaderAsync();
+            //return reader.GetBoolean(0);
+            return (bool)(await cmd.ExecuteScalarAsync());
         }
 
         public async Task RemoveSalary(int id)
