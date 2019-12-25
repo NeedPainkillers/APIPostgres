@@ -15,7 +15,6 @@ namespace Kulkov.Repository
         Task<Post> GetPostByName(int id);
         Task AddPost(Post item);
         Task RemovePost(int id);
-        // обновление содержания (body) записи
         Task UpdatePost(int id, Post item);
     }
 
@@ -36,9 +35,6 @@ namespace Kulkov.Repository
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
 
-            //await using (var cmd = new NpgsqlCommand("INSERT INTO taskdb.public.\"Posts\" (post_name, date_start) " +
-            //    "VALUES ((@name), (@date));", connection))
-            //CALL insert_on_posts(text 't', now()::timestamp);
             await using (var cmd = new NpgsqlCommand(string.Format("CALL insert_on_posts(text '{0}',(@date)::timestamp);", item.post_name), connection))
             {
                 cmd.Parameters.AddWithValue("date", item.date_start);

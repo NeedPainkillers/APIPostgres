@@ -16,6 +16,7 @@ namespace Kulkov.Repository
         Task<IEnumerable<Department>> GetDepartmentsHaving();
         Task<Department> GetDepartment(int id);
         Task<IEnumerable<Department>> GetDepartmentByName(int id);
+        Task<IEnumerable<Department>> GetDepartmentAny();
         Task AddDepartment(Department item);
         Task<IEnumerable<Employee>> GetEmployees (int id_dept);
         Task AddEmployee(int id_dep, int id_emp);
@@ -122,6 +123,41 @@ namespace Kulkov.Repository
                 id_loc = Int32.Parse(reader.GetValue(2).ToString()),
                 id_head = Int32.Parse(reader.GetValue(3).ToString())
             };
+        }
+
+        public async Task<IEnumerable<Department>> GetDepartmentAny()
+        {
+            var connection = _context.GetConnection;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
+            /*
+             *  SELECT d.dept_name, AVG(s.salary)
+                FROM public."dept_empl" de
+                LEFT JOIN "Employees" e ON e.id_emp = de.id_emp
+                LEFT JOIN "Salaries" s ON s.id_emp = e.id_emp
+                LEFT JOIN "Departments" d ON d.id_dept = de.id_dept
+                GROUP BY de.id_dept, d.dept_name
+                HAVING AVG(s.salary)>=ALL
+                (SELECT AVG(s1.salary) FROM public."dept_empl" d1
+                LEFT JOIN "Employees" e1 ON e1.id_emp = d1.id_emp
+                LEFT JOIN "Salaries" s1 ON s1.id_emp = e1.id_emp
+                GROUP BY d1.id_dept);
+                */
+            List<Department> Response = new List<Department>();
+            await using (var cmd = new NpgsqlCommand("SELECT d.dept_name, AVG(s.salary) FROM public.\"dept_empl\" de LEFT JOIN \"Employees\" e ON e.id_emp = de.id_emp LEFT JOIN \"Salaries\" s ON s.id_emp = e.id_emp LEFT JOIN \"Departments\" d ON d.id_dept = de.id_dept GROUP BY de.id_dept, d.dept_name HAVING AVG(s.salary)>=ALL (SELECT AVG(s1.salary) FROM public.\"dept_empl\" d1 LEFT JOIN \"Employees\" e1 ON e1.id_emp = d1.id_emp LEFT JOIN \"Salaries\" s1 ON s1.id_emp = e1.id_emp GROUP BY d1.id_dept);", connection))
+            {
+                await using (var reader = await cmd.ExecuteReaderAsync())
+                    while (await reader.ReadAsync())
+                    {
+                        Response.Add(new Department()
+                        {
+                            dept_name = reader.GetValue(0).ToString(),
+                            additionalInfo = reader.GetValue(1).ToString()
+                        });
+                    }
+            }
+            return Response;
         }
 
         public async Task<IEnumerable<Department>> GetDepartmentByName(int id)

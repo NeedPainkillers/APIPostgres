@@ -294,7 +294,7 @@ namespace Kulkov.Repository
                                                                     String.Format("WHERE e.id_emp = {0};", id), connection);
             await using (var reader = await cmd.ExecuteReaderAsync())
             {
-                reader.ReadAsync();
+                await reader.ReadAsync();
                 if (!Int32.TryParse(reader.GetValue(3).ToString(), out int fee))
                     fee = -1;
                 return new Employee()
@@ -329,7 +329,7 @@ namespace Kulkov.Repository
                     {
                         last_name = reader.GetString(0),
                         salary = new Salary() { salary = reader.GetInt32(1) },
-                        additionalInfo = JsonSerializer.Serialize(new { avgSalary = reader.GetValue(2).ToString() })
+                        additionalInfo = reader.GetValue(2).ToString()
                     });
                 }
             return Response;

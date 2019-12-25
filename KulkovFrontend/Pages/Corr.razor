@@ -1,0 +1,51 @@
+﻿@page "/corr"
+
+@using Kulkov.Repository
+@using System.Linq
+@using System.Collections.Generic
+@inject IEmployeeRepository Service
+
+<h1>Case example</h1>
+
+@if (employees == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Фамилия</th>
+                <th>Зарплата</th>
+                <th>Средняя зарплата</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in employees)
+            {
+                <tr>
+                    <td>@row.last_name</td>
+                    <td>@row.salary.salary</td>
+                    <td>@row.additionalInfo</td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Kulkov.Data.Employee> employees;
+
+    //protected async Task Update()
+    //{
+    //    employee = (await Service.GetEmployeeCase(id));
+    //}
+
+    protected async override Task OnInitializedAsync()
+    {
+        employees = (await Service.GetEmployeesCorr()).ToList();
+    }
+}
+

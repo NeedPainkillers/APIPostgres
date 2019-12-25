@@ -100,15 +100,12 @@ namespace Kulkov.Repository
 
         public async Task<bool> IndexSalaries()
         {
-            //select sal_cur();
             var connection = _context.GetConnection;
 
             if (connection.State != System.Data.ConnectionState.Open)
                 await connection.OpenAsync();
 
             await using var cmd = new NpgsqlCommand("select sal_cur()", connection);
-            //await using var reader = await cmd.ExecuteReaderAsync();
-            //return reader.GetBoolean(0);
             return (bool)(await cmd.ExecuteScalarAsync());
         }
 
