@@ -16,7 +16,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
     <PackageReference Include="Npgsql" Version="4.1.1" />
     <PackageReference Include="System.Data.Odbc" Version="4.6.0" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.7.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
   </ItemGroup>
 
 </Project>
